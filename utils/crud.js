@@ -1,8 +1,8 @@
 exports.getMany = model => async (req, res) => {
     try {
         const docs = await model.find({});
-        if (!docs) {
-            return res.status(404).end();
+        if (docs) {
+            return res.status(404).json({ error: '404 Not Foud!'});
         } 
         res.status(200).json({ data: docs });
     } catch (error) {
@@ -15,8 +15,9 @@ exports.getOne = model => async (req, res) => {
     
     try {
         const doc = await model.findById(id);
+        console.log(doc);
         if (!doc) {
-            return res.status(404).end();
+            return res.status(404).json({ error: '404 Not Found!'});
         }
         res.status(200).json({ data: doc});
     } catch (error) {

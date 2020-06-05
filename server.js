@@ -23,9 +23,26 @@ app.use('/api/item', ItemRoutes);
 // list routes
 app.use('/api/list', ListRoutes)
 
+// error handling for not valid routes
+app.use((req, res, next) => {
+     const error = new Error('Not found');
+     error.status = 404;
+     next(error);
+ });
+ 
+ app.use((error, req, res, next) => {
+     res.status(error.status || 500).json({
+         error: {
+             message: error.message
+         }
+     });
+ });
+
 const start = async () => {
    try {
+        console.log('Database Connecting.....');
         await connect();
+        console.log('Database Connected');
         app.listen(config.PORT, () => {
         console.log(`REST API on http://localhost:${config.PORT}/api`)
         })
