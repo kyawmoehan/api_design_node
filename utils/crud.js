@@ -1,6 +1,6 @@
 exports.getMany = model => async (req, res) => {
     try {
-        const docs = await model.find({});
+        const docs = await model.find({}).select('-__v');
         if (!docs) {
             return res.status(404).json({ error: '404 Not Foud!'});
         } 
@@ -14,7 +14,7 @@ exports.getOne = model => async (req, res) => {
     const id = req.params.id;
     
     try {
-        const doc = await model.findById(id);
+        const doc = await model.findById(id).select('-__v');
         if (!doc) {
             return res.status(404).json({ error: '404 Not Found!'});
         }
@@ -35,7 +35,7 @@ exports.createOne = model => async (req, res) => {
 
 exports.updateOne = model => async (req, res) => {
     try {
-        const updateDoc = await model.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updateDoc = await model.findByIdAndUpdate(req.params.id, req.body, { new: true }).select('-__v');
         if (!updateDoc) {
             return res.status(404).json({ error: '404 Not Found!' });
         }
@@ -47,8 +47,8 @@ exports.updateOne = model => async (req, res) => {
 
 exports.removeOne = model => async (req, res) => {
     try {
-        const removeDoc = await model.findByIdAndRemove(req.params.id);
-        if (!doc) {
+        const removeDoc = await model.findByIdAndRemove(req.params.id).select('-__v');
+        if (!removeDoc) {
             return res.status(404).json({ error: '404 Not Found!' });
         }
         res.status(200).json({ message: 'Deleted Successfully!', data: removeDoc });
