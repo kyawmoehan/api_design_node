@@ -10,6 +10,7 @@ const itemSchema = new mongoose.Schema({
         enum: ['active', 'complete', 'pastdue'] },
     notes: String,
     due: Date,
+    createdBy: { type: mongoose.SchemaTypes.ObjectId, ref: 'user', required: true },
     list: { type: mongoose.SchemaTypes.ObjectId, required: true, ref: 'List' }
 }, 
 { timestamps: true }

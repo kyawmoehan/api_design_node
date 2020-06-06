@@ -1,6 +1,6 @@
 exports.getMany = model => async (req, res) => {
     try {
-        const docs = await model.find({}).select('-__v');
+        const docs = await model.find({ createdBy: req.user._id }).select('-__v');
         if (!docs) {
             return res.status(404).json({ error: '404 Not Foud!'});
         } 
@@ -14,7 +14,7 @@ exports.getOne = model => async (req, res) => {
     const id = req.params.id;
     
     try {
-        const doc = await model.findById(id).select('-__v');
+        const doc = await model.findOne({ createdBy: req.user._id, _id: req.params.id }).select('-__v');
         if (!doc) {
             return res.status(404).json({ error: '404 Not Found!'});
         }
@@ -25,8 +25,10 @@ exports.getOne = model => async (req, res) => {
 }
 
 exports.createOne = model => async (req, res) => {
+    const createdBy = req.user._id;
+
     try {
-        const createDoc = await model.create(req.body);
+        const createDoc = await model.create({ ...req.body, createdBy });
         res.status(201).json({ message: 'Created Successfully!', data: createDoc });
     } catch (err) {
         res.status(500).json({ error: err });
@@ -35,7 +37,15 @@ exports.createOne = model => async (req, res) => {
 
 exports.updateOne = model => async (req, res) => {
     try {
-        const updateDoc = await model.findByIdAndUpdate(req.params.id, req.body, { new: true }).select('-__v');
+        const updateDoc = await model.findOneAndUpdate({
+            createdBy: req.user._id,
+            _id: req.params.id
+        }, 
+        req.body, 
+        { 
+            new: true 
+        })
+        .select('-__v');
         if (!updateDoc) {
             return res.status(404).json({ error: '404 Not Found!' });
         }
@@ -47,7 +57,10 @@ exports.updateOne = model => async (req, res) => {
 
 exports.removeOne = model => async (req, res) => {
     try {
-        const removeDoc = await model.findByIdAndRemove(req.params.id).select('-__v');
+        const removeDoc = await model.findOneAndRemove({
+            createdBy: req.user._id,
+            _id: req.params.id
+          }).select('-__v');
         if (!removeDoc) {
             return res.status(404).json({ error: '404 Not Found!' });
         }

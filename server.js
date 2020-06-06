@@ -7,6 +7,8 @@ const config = require('./utils/config');
 
 const ItemRoutes = require('./resources/item/item.router');
 const ListRoutes = require('./resources/list/list.router');
+const UserRoutes = require('./resources/user/user.router');
+const { signup, signin, protect } = require('./utils/auth');
 
 const app = express();
 
@@ -17,10 +19,13 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(morgan('dev'));
 
-// items routes
-app.use('/api/item', ItemRoutes);
+app.post('/signup', signup)
+app.post('/signin', signin)
 
-// list routes
+app.use('/api', protect);
+
+app.use('/api/user', UserRoutes);
+app.use('/api/item', ItemRoutes);
 app.use('/api/list', ListRoutes)
 
 // error handling for not valid routes
